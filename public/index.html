@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#F6F2EA">
+<title>Acceso — Núcleo Kokón</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<main class="auth-wrap">
+  <div class="auth-card">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="brand-name"><small>Núcleo</small><strong>Kokón</strong></span>
+    </div>
+
+    <div id="msg" role="status" aria-live="polite"></div>
+
+    <!-- Iniciar sesión -->
+    <section id="view-login">
+      <h1>Bienvenida a tu <strong>proceso</strong></h1>
+      <p class="auth-sub">Inicia sesión para continuar donde lo dejaste.</p>
+      <form id="form-login" novalidate>
+        <div class="field"><label for="l-email">Correo electrónico</label><input id="l-email" type="email" autocomplete="email" required></div>
+        <div class="field"><label for="l-pass">Contraseña</label><input id="l-pass" type="password" autocomplete="current-password" required></div>
+        <button class="btn btn-primary btn-block" type="submit">Entrar</button>
+      </form>
+      <div class="auth-switch"><button class="link-btn" data-go="forgot" type="button">¿Olvidaste tu contraseña?</button></div>
+      <div class="divider" id="google-divider" hidden>o continúa con</div>
+      <div id="googleBtn" hidden></div>
+      <p class="auth-switch">¿Aún no tienes cuenta? <button class="link-btn" data-go="register" type="button">Regístrate gratis</button></p>
+    </section>
+
+    <!-- Registro -->
+    <section id="view-register" hidden>
+      <h1>Crea tu <strong>cuenta</strong></h1>
+      <p class="auth-sub">Empieza gratis. Tú decides cuándo avanzar.</p>
+      <form id="form-register" novalidate>
+        <div class="field"><label for="r-name">Nombre</label><input id="r-name" type="text" autocomplete="name"></div>
+        <div class="field"><label for="r-email">Correo electrónico</label><input id="r-email" type="email" autocomplete="email" required></div>
+        <div class="field"><label for="r-pass">Contraseña (mínimo 8 caracteres)</label><input id="r-pass" type="password" autocomplete="new-password" minlength="8" required></div>
+        <button class="btn btn-primary btn-block" type="submit">Crear cuenta</button>
+      </form>
+      <p class="auth-switch">¿Ya tienes cuenta? <button class="link-btn" data-go="login" type="button">Inicia sesión</button></p>
+    </section>
+
+    <!-- Recuperar contraseña -->
+    <section id="view-forgot" hidden>
+      <h1>Recupera tu <strong>acceso</strong></h1>
+      <p class="auth-sub">Te enviaremos un enlace para crear una nueva contraseña.</p>
+      <form id="form-forgot" novalidate>
+        <div class="field"><label for="f-email">Correo electrónico</label><input id="f-email" type="email" autocomplete="email" required></div>
+        <button class="btn btn-primary btn-block" type="submit">Enviar enlace</button>
+      </form>
+      <p class="auth-switch"><button class="link-btn" data-go="login" type="button">Volver a iniciar sesión</button></p>
+    </section>
+
+    <!-- Nueva contraseña (llega con ?reset=token) -->
+    <section id="view-reset" hidden>
+      <h1>Crea una nueva <strong>contraseña</strong></h1>
+      <p class="auth-sub">Elige una contraseña de al menos 8 caracteres.</p>
+      <form id="form-reset" novalidate>
+        <div class="field"><label for="n-pass">Nueva contraseña</label><input id="n-pass" type="password" autocomplete="new-password" minlength="8" required></div>
+        <button class="btn btn-primary btn-block" type="submit">Guardar contraseña</button>
+      </form>
+    </section>
+  </div>
+</main>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+</body>
+</html>

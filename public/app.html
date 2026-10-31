@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#F6F2EA">
+<title>Mi espacio — Núcleo Kokón</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div class="loading" id="loading">Preparando tu espacio…</div>
+
+<div class="app" id="app" hidden>
+  <header class="topbar">
+    <button class="icon-btn" id="menuBtn" aria-label="Abrir menú" aria-expanded="false" aria-controls="drawer">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+    </button>
+    <div class="hello">
+      <small id="today"></small>
+      <strong id="greeting"></strong>
+    </div>
+    <span class="sem-badge" id="semBadge" title="Índice de Sostenibilidad"><span class="sem-dot"></span><span id="semLabel"></span></span>
+  </header>
+
+  <main class="slides" id="slides" tabindex="-1">
+    <!-- Slide 1 — Prioridad del día -->
+    <section class="slide" id="slide-1" aria-label="Prioridades del día">
+      <div class="slide-inner">
+        <p class="eyebrow">Prioridades de hoy</p>
+        <h2>Lo <strong>esencial</strong> para sostener tu día</h2>
+        <div id="priorities"></div>
+        <form class="add-row" id="addForm" hidden>
+          <label class="sr-only" for="newPriority">Nueva prioridad</label>
+          <input id="newPriority" type="text" maxlength="200" placeholder="¿Qué es lo más importante?">
+          <button class="btn btn-primary" type="submit">Agregar</button>
+        </form>
+        <p class="hint" id="priorityHint"></p>
+      </div>
+    </section>
+
+    <!-- Slide 2 — Frase ancla -->
+    <section class="slide anchor-slide" id="slide-2" aria-label="Frase ancla">
+      <div class="slide-inner anchor-card">
+        <div class="anchor-mark" aria-hidden="true">“</div>
+        <blockquote id="phrase" aria-live="polite"></blockquote>
+        <div class="anchor-nav">
+          <button class="icon-btn" id="phrasePrev" aria-label="Frase anterior"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button>
+          <span id="phraseCount" aria-hidden="true"></span>
+          <button class="icon-btn" id="phraseNext" aria-label="Frase siguiente"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 3 — Check-ins -->
+    <section class="slide" id="slide-3" aria-label="Check-ins y métricas">
+      <div class="slide-inner">
+        <p class="eyebrow">Check-ins</p>
+        <h2>Observa cómo está <strong>tu sistema</strong></h2>
+
+        <div class="card">
+          <h3>Tus cuatro ejes</h3>
+          <p class="sub">Cada anillo muestra el avance de hoy.</p>
+          <div class="rings-wrap">
+            <svg id="rings" viewBox="0 0 200 200" width="170" height="170" role="img" aria-label="Gráfico de anillos concéntricos"></svg>
+            <ul class="rings-legend" id="ringsLegend"></ul>
+          </div>
+        </div>
+
+        <div class="card photo-step" id="photoStep" hidden>
+          <h3>Antes de empezar: tu espacio</h3>
+          <p class="sub">Sube una foto del lugar donde haces tu check-in (tu escritorio, un espejo, un pizarrón). Alimentará la Comunidad.</p>
+          <img id="photoPreview" class="photo-preview" alt="Vista previa de tu foto" hidden>
+          <input type="file" id="photoInput" accept="image/jpeg,image/png,image/webp" capture="environment" class="sr-only">
+          <label for="photoInput" class="btn btn-primary" id="photoLabel" tabindex="0">Elegir foto</label>
+          <div><button class="link-btn" id="photoSkip" type="button">Hoy prefiero omitirlo</button></div>
+        </div>
+
+        <div class="card" id="checkinCard" hidden>
+          <h3>Check-ins de hoy</h3>
+          <p class="counter" id="ciCounter"></p>
+          <div id="checkins"></div>
+          <form class="add-row" id="habitForm">
+            <label class="sr-only" for="newHabit">Nuevo hábito personalizado</label>
+            <input id="newHabit" type="text" maxlength="60" placeholder="Agregar hábito (ej. Regar mi planta)">
+            <button class="btn btn-ghost" type="submit">Añadir</button>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="dots" id="dots" role="tablist" aria-label="Secciones"></div>
+</div>
+
+<div class="overlay" id="overlay"></div>
+<aside class="drawer" id="drawer" aria-label="Menú principal" aria-hidden="true">
+  <div class="drawer-head">
+    <div class="brand" style="margin:0"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name"><small>Núcleo</small><strong>Kokón</strong></span></div>
+    <button class="icon-btn" id="closeMenu" aria-label="Cerrar menú"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  </div>
+  <nav id="menuNav"></nav>
+  <div class="drawer-foot"><button class="btn btn-ghost btn-block" id="logout" type="button">Cerrar sesión</button></div>
+</aside>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Demo — Asistente Kokón</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F6F2EA; --surface: #FFFFFF; --ink: #2B2A33; --muted: #5F5A63;
+  --earth: #7A5230; --earth-soft: #E9DFCF; --blue: #1F3A5F; --blue-soft: #DCE4EF;
+  --line: rgba(43,42,51,.14); --green: #2F7D5B; --radius: 22px;
+  --shadow: 0 6px 28px rgba(43,42,51,.08);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Montserrat', system-ui, sans-serif; background: var(--bg);
+  color: var(--ink); line-height: 1.6; min-height: 100dvh;
+}
+.app { max-width: 480px; margin: 0 auto; height: 100dvh; display: flex; flex-direction: column; background: var(--bg); box-shadow: 0 0 40px rgba(0,0,0,.06); }
+header { padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; background: var(--surface); border-bottom: 1px solid var(--line); }
+header .brand { display: flex; align-items: center; gap: 10px; }
+header .mark { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--earth); position: relative; }
+header .mark::after { content:''; position:absolute; inset:7px; border-radius:50%; border:2px solid var(--blue); }
+header .name small { display:block; font-size:.62rem; letter-spacing:.16em; text-transform:uppercase; color: var(--muted); }
+header .name strong { font-size: 1rem; letter-spacing:.18em; text-transform:uppercase; color: var(--earth); }
+.tabs { display: flex; gap: 4px; padding: 8px 12px; background: var(--surface); border-bottom: 1px solid var(--line); overflow-x: auto; }
+.tab { flex: 0 0 auto; padding: 8px 16px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg); font-size: .85rem; font-weight: 500; cursor: pointer; min-height: 40px; }
+.tab.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+main { flex: 1; overflow-y: auto; padding: 20px; }
+.view { display: none; }
+.view.active { display: block; }
+.eyebrow { font-size: .72rem; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--earth); margin-bottom: 8px; }
+h2 { font-size: 1.5rem; font-weight: 300; line-height: 1.3; margin-bottom: 16px; }
+h2 strong { font-weight: 700; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow); margin-bottom: 14px; }
+.card.hero { background: var(--blue); color: #fff; border: none; }
+.priority { display: flex; align-items: center; gap: 14px; }
+.priority .tag { font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; color: var(--earth); display: block; margin-bottom: 4px; }
+.card.hero .tag { color: #CFE0F5; }
+.priority .title { font-size: 1.15rem; font-weight: 500; }
+.check { width: 46px; height: 46px; border-radius: 50%; border: 2px solid var(--earth); background: transparent; display: grid; place-items: center; flex: 0 0 46px; }
+.card.hero .check { border-color: #fff; }
+.check svg { width: 22px; height: 22px; stroke: #fff; fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.phrase { text-align: center; padding: 40px 20px; }
+.phrase blockquote { font-size: 1.35rem; font-weight: 300; line-height: 1.5; }
+.phrase .mark { font-size: 3rem; color: var(--earth); line-height: 1; margin-bottom: 8px; }
+.checkin-row { padding: 12px 0; border-top: 1px solid var(--line); }
+.checkin-row:first-of-type { border-top: none; }
+.checkin-row .head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-weight: 500; }
+.checkin-row .head .emoji { font-size: 1.3rem; }
+.scale { display: flex; gap: 6px; }
+.scale button { flex: 1; min-height: 42px; border-radius: 10px; border: 1.5px solid var(--line); background: var(--bg); font-weight: 600; cursor: pointer; }
+.scale button[aria-pressed="true"] { background: var(--blue); color: #fff; border-color: var(--blue); }
+
+/* Chat */
+.chat-shell { display: flex; flex-direction: column; height: calc(100dvh - 220px); min-height: 400px; background: var(--surface); border-radius: var(--radius); border: 1px solid var(--line); overflow: hidden; }
+.chat-head { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--line); background: var(--bg); }
+.chat-head .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 3px rgba(47,125,91,.18); }
+.chat-head strong { font-size: .92rem; }
+.chat-head small { color: var(--muted); font-size: .75rem; margin-left: auto; }
+.chat-messages { flex: 1; overflow-y: auto; padding: 18px 14px; display: flex; flex-direction: column; gap: 12px; background: var(--bg); }
+.chat-messages::-webkit-scrollbar { width: 6px; }
+.chat-messages::-webkit-scrollbar-thumb { background: var(--line); border-radius: 3px; }
+.msg { display: flex; gap: 10px; align-items: flex-start; animation: fadeUp .25s ease; }
+.msg.user { flex-direction: row-reverse; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.msg-avatar { flex: 0 0 30px; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-size: .65rem; font-weight: 700; }
+.msg-bot .msg-avatar { background: var(--earth); }
+.msg.user .msg-avatar { background: var(--blue); }
+.msg-bubble { max-width: 80%; padding: 10px 14px; font-size: .92rem; line-height: 1.55; border-radius: 4px 16px 16px 16px; background: var(--surface); border: 1px solid var(--line); white-space: pre-wrap; word-wrap: break-word; }
+.msg.user .msg-bubble { background: var(--blue); color: #fff; border: none; border-radius: 16px 4px 16px 16px; }
+.chat-typing { display: flex; gap: 5px; padding: 12px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 4px 16px 16px 16px; width: fit-content; }
+.chat-typing i { width: 7px; height: 7px; border-radius: 50%; background: var(--earth); opacity: .4; animation: blink 1.2s infinite; }
+.chat-typing i:nth-child(2) { animation-delay: .18s; }
+.chat-typing i:nth-child(3) { animation-delay: .36s; }
+@keyframes blink { 0%,60%,100% { opacity: .3; } 30% { opacity: 1; } }
+.chat-input-row { display: flex; gap: 8px; padding: 10px 12px; border-top: 1px solid var(--line); background: var(--surface); }
+.chat-input-row input { flex: 1; min-height: 44px; padding: 0 14px; border: 1.5px solid var(--line); border-radius: 999px; background: var(--bg); font-size: .92rem; font-family: inherit; }
+.chat-input-row input:focus { border-color: var(--blue); outline: none; }
+.chat-send { flex: 0 0 44px; width: 44px; height: 44px; border-radius: 50%; background: var(--blue); color: #fff; border: none; display: grid; place-items: center; cursor: pointer; }
+.chat-send:disabled { opacity: .5; cursor: not-allowed; }
+.chat-send svg { width: 18px; height: 18px; fill: #fff; }
+.chat-empty { margin: auto; text-align: center; max-width: 320px; color: var(--muted); font-size: .92rem; padding: 30px 20px; }
+.chat-empty strong { display: block; color: var(--earth); margin-bottom: 6px; font-size: 1rem; }
+.notice { background: var(--earth-soft); border-left: 3px solid var(--earth); padding: 10px 14px; border-radius: 0 10px 10px 0; font-size: .85rem; color: var(--ink); margin-bottom: 14px; }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="brand">
+      <div class="mark"></div>
+      <div class="name"><small>Núcleo</small><strong>Kokón</strong></div>
+    </div>
+    <span style="font-size:.75rem;color:var(--muted);">Demo</span>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab active" data-tab="prioridades">Prioridades</button>
+    <button class="tab" data-tab="frase">Frase ancla</button>
+    <button class="tab" data-tab="checkins">Check-ins</button>
+    <button class="tab" data-tab="chat">Asistente Kokón</button>
+  </nav>
+
+  <main>
+    <!-- PRIORIDADES -->
+    <section class="view active" id="view-prioridades">
+      <p class="eyebrow">Prioridades de hoy</p>
+      <h2>Lo <strong>esencial</strong> para sostener tu día</h2>
+      <div class="card hero priority">
+        <div style="flex:1">
+          <span class="tag">Prioridad 1</span>
+          <div class="title">Terminar propuesta para Fundación X</div>
+        </div>
+        <button class="check" aria-label="Completar"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></button>
+      </div>
+      <div class="card priority">
+        <div style="flex:1">
+          <span class="tag">Prioridad 2</span>
+          <div class="title">Llamar a Andrea para coordinar webinar</div>
+        </div>
+        <button class="check" aria-label="Completar"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></button>
+      </div>
+      <div class="card priority">
+        <div style="flex:1">
+          <span class="tag">Prioridad 3</span>
+          <div class="title">20 minutos de descanso sin pantallas</div>
+        </div>
+        <button class="check" aria-label="Completar"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></button>
+      </div>
+    </section>
+
+    <!-- FRASE -->
+    <section class="view" id="view-frase">
+      <div class="phrase">
+        <div class="mark">"</div>
+        <blockquote>No tienes que sostenerlo todo. Solo lo que hoy te corresponde.</blockquote>
+      </div>
+    </section>
+
+    <!-- CHECK-INS -->
+    <section class="view" id="view-checkins">
+      <p class="eyebrow">Check-ins</p>
+      <h2>Observa cómo está <strong>tu sistema</strong></h2>
+      <div class="card">
+        <div class="checkin-row">
+          <div class="head"><span class="emoji">🫀</span> Cuerpo</div>
+          <div class="scale" data-scale="cuerpo"><button>1</button><button>2</button><button>3</button><button>4</button><button>5</button></div>
+        </div>
+        <div class="checkin-row">
+          <div class="head"><span class="emoji">💭</span> Emoción</div>
+          <div class="scale" data-scale="emocion"><button>1</button><button>2</button><button>3</button><button>4</button><button>5</button></div>
+        </div>
+        <div class="checkin-row">
+          <div class="head"><span class="emoji">⚙️</span> Operativo</div>
+          <div class="scale" data-scale="operativo"><button>1</button><button>2</button><button>3</button><button>4</button><button>5</button></div>
+        </div>
+        <div class="checkin-row">
+          <div class="head"><span class="emoji">🎯</span> Enfoque</div>
+          <div class="scale" data-scale="enfoque"><button>1</button><button>2</button><button>3</button><button>4</button><button>5</button></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CHAT -->
+    <section class="view" id="view-chat">
+      <div class="notice">
+        🔍 <strong>Modo demo:</strong> el chat responde con mensajes simulados. En tu servidor real, responderá con IA de verdad.
+      </div>
+      <div class="chat-shell">
+        <div class="chat-head">
+          <span class="dot"></span>
+          <strong>Asistente Kokón</strong>
+          <small>En línea</small>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+          <div class="chat-empty">
+            <strong>Hola. Soy tu asistente Kokón.</strong>
+            Puedo acompañarte a ordenar lo que sientes, pensar una decisión difícil o simplemente escucharte. ¿Por dónde te gustaría empezar?
+          </div>
+        </div>
+        <div class="chat-input-row">
+          <input type="text" id="chatInput" placeholder="Escribe lo que sientes o piensas…" autocomplete="off">
+          <button class="chat-send" id="chatSend" aria-label="Enviar">
+            <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+// ---------- Tabs ----------
+document.querySelectorAll('.tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('view-' + btn.dataset.tab).classList.add('active');
+    if (btn.dataset.tab === 'chat') document.getElementById('chatInput').focus();
+  });
+});
+
+// ---------- Check-in escalas ----------
+document.querySelectorAll('.scale').forEach(scale => {
+  scale.querySelectorAll('button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      scale.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', 'false'));
+      btn.setAttribute('aria-pressed', 'true');
+    });
+  });
+});
+
+// ---------- Prioridades check ----------
+document.querySelectorAll('.check').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const card = btn.closest('.priority');
+    card.style.opacity = card.style.opacity === '0.5' ? '1' : '0.5';
+    card.style.textDecoration = card.style.textDecoration === 'line-through' ? 'none' : 'line-through';
+  });
+});
+
+// ---------- Chat demo ----------
+const chatMessages = document.getElementById('chatMessages');
+const chatInput = document.getElementById('chatInput');
+const chatSend = document.getElementById('chatSend');
+let sending = false;
+
+// Respuestas simuladas según palabras clave
+const cannedReplies = [
+  { match: /agotad|cansad|fatiga|burnout|sin energía|no puedo más/i,
+    reply: "Lo que describes suena a un sistema que lleva demasiado tiempo sosteniendo más de lo que le toca. El agotamiento no es falta de voluntad: es una señal de que algo necesita reorganizarse.\n\nAntes de buscar soluciones, quiero preguntarte: ¿qué es lo que hoy te está costando más energía? ¿Es una tarea concreta, una relación, o una sensación difusa de fondo?" },
+  { match: /decisi|elegir|duda|no sé qué hacer|confundid/i,
+    reply: "Cuando una decisión pesa, a veces no es porque falten opciones, sino porque hay miedo a equivocarse. Y eso es profundamente humano.\n\nUna práctica que puede ayudarte: escribe las dos opciones en una hoja. Al lado de cada una, anota qué versión de ti te hace habitar cada camino. No cuál es más razonable, sino cuál te acerca más a quien quieres ser.\n\n¿Te animas a hacerlo conmigo ahora? Dime las dos opciones que tienes en mente." },
+  { match: /equipo|colaborador|trabajo en grupo|reunión|conflicto/i,
+    reply: "Los equipos son sistemas vivos: cuando alguien se desgasta, todo el conjunto lo resiente. Y cuando algo no fluye, suele ser una señal de que hay algo que nadie está nombrando.\n\n¿Puedes contarme qué pasa específicamente con tu equipo? ¿Es un tema de carga, de roles confusos, de vínculos, o de algo que todavía no tiene nombre?" },
+  { match: /sola|solo|soledad|nadie|incomprendid/i,
+    reply: "Sostener algo en soledad cansa de una manera distinta. No es solo el trabajo: es la sensación de que nadie más está mirando lo que tú ves.\n\nMe alegra que lo digas aquí. En Núcleo Kokón creemos que nadie debería sostener su proyecto a solas. Cuéntame, ¿qué es lo que hoy sientes que estás cargando sin compañía?" },
+  { match: /gracias|ayuda|gracias por/i,
+    reply: "Gracias a ti por abrir este espacio. A veces el simple hecho de nombrar lo que sentimos ya es un primer paso.\n\nSigo aquí cuando quieras profundizar, o si prefieres, puedo sugerirte una práctica pequeña para cerrar el día con más calma. ¿Te interesa?" },
+];
+
+function addMessage(role, text) {
+  const msg = document.createElement('div');
+  msg.className = `msg msg-${role}`;
+  msg.innerHTML = `
+    <div class="msg-avatar">${role === 'user' ? 'Tú' : 'NK'}</div>
+    <div class="msg-bubble">${text.replace(/\n/g, '<br>')}</div>`;
+  chatMessages.appendChild(msg);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function showTyping() {
+  const el = document.createElement('div');
+  el.id = 'typing';
+  el.className = 'msg msg-bot';
+  el.innerHTML = `<div class="msg-avatar">NK</div><div class="chat-typing"><i></i><i></i><i></i></div>`;
+  chatMessages.appendChild(el);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function removeTyping() {
+  document.getElementById('typing')?.remove();
+}
+
+function getReply(text) {
+  for (const r of cannedReplies) if (r.match.test(text)) return r.reply;
+  return "Gracias por compartir eso. Quiero entenderte mejor antes de responder.\n\n¿Puedes contarme un poco más? ¿Qué es lo que hay detrás de lo que acabas de decir?";
+}
+
+function send() {
+  if (sending) return;
+  const text = chatInput.value.trim();
+  if (!text) return;
+
+  const empty = chatMessages.querySelector('.chat-empty');
+  if (empty) chatMessages.innerHTML = '';
+
+  chatInput.value = '';
+  addMessage('user', text);
+  showTyping();
+  sending = true;
+  chatSend.disabled = true;
+
+  setTimeout(() => {
+    removeTyping();
+    addMessage('bot', getReply(text));
+    sending = false;
+    chatSend.disabled = false;
+    chatInput.focus();
+  }, 1200 + Math.random() * 800);
+}
+
+chatSend.addEventListener('click', send);
+chatInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+});
+</script>
+</body>
+</html>
